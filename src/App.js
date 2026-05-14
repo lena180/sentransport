@@ -10,6 +10,7 @@ import Footer from "./Footer";
 function App() {
   const [recherche, setRecherche] = useState("");
   const [ligneSelectionnee, setLigneSelectionnee] = useState(null);
+  const [nbRecherches, setNbRecherches] = useState(0); // 3e etat 
 
     const lignes = [
       {
@@ -128,41 +129,50 @@ function App() {
     }
   }
 
+  function handleRecherche(valeur) {
+  setRecherche(valeur);
+  setNbRecherches(n => n + 1);
+}
+
   return (
-    <div className="App">
-      <Header />
+  <div className="App">
+    <Header />
+    <main className="contenu">
 
-      <main className="contenu">
-        <Recherche valeur={recherche} onChange={setRecherche} />
+      <p className="compteur-recherches">
+        Vous avez effectué {nbRecherches} recherche{nbRecherches > 1 ? "s" : ""}
+      </p>
 
-        <p className="resultat-recherche">
-          {lignesFiltrees.length} ligne
-          {lignesFiltrees.length > 1 ? "s" : ""} trouvee
-          {lignesFiltrees.length > 1 ? "s" : ""}
+      <Recherche valeur={recherche} onChange={handleRecherche} />
+
+      <p className="resultat-recherche">
+        {lignesFiltrees.length} ligne{lignesFiltrees.length > 1 ? "s" : ""} trouvée{lignesFiltrees.length > 1 ? "s" : ""}
+      </p>
+
+      {lignesFiltrees.length === 0 ? (
+        <p className="aucun-resultat">
+          Aucune ligne trouvée pour &quot;{recherche}&quot;
         </p>
-
-        {lignesFiltrees.map((ligne) => (
+      ) : (
+        lignesFiltrees.map(ligne => (
           <LigneBus
             key={ligne.id}
             numero={ligne.numero}
             depart={ligne.depart}
             arrivee={ligne.arrivee}
             arrets={ligne.arrets}
-            estSelectionnee={
-              ligneSelectionnee && ligneSelectionnee.id === ligne.id
-            }
+            estSelectionnee={ligneSelectionnee && ligneSelectionnee.id === ligne.id}
             onClick={() => handleClickLigne(ligne)}
           />
-        ))}
+        ))
+      )}
 
-        {ligneSelectionnee && (
-          <DetailLigne ligne={ligneSelectionnee} />
-        )}
-      </main>
+      {ligneSelectionnee && <DetailLigne ligne={ligneSelectionnee} />}
 
-      <Footer />
-    </div>
-  );
+    </main>
+    <Footer />
+  </div>
+);
 }
 
 export default App;
